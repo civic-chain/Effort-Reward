@@ -68,8 +68,8 @@ export default {
         control: "0.625rem",
       },
       boxShadow: {
-        raised: "0 1px 2px oklch(0.2 0.12 280 / 0.06), 0 8px 24px oklch(0.2 0.12 280 / 0.08)",
-        control: "inset 0 1px 2px oklch(0.2 0.12 280 / 0.05)",
+        raised: "0 1px 2px rgba(19, 31, 134, 0.06), 0 8px 24px rgba(19, 31, 134, 0.08)",
+        control: "inset 0 1px 2px rgba(19, 31, 134, 0.05)",
       },
     },
   },

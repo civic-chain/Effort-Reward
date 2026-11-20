@@ -68,7 +68,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b bg-page/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b bg-page">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3 sm:px-6">
           <Logo />
           <nav className="flex items-center gap-1" aria-label="Pages">

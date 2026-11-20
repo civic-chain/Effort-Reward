@@ -127,7 +127,7 @@ export default function InquiryForm() {
 
   return (
     <form onSubmit={submit} noValidate>
-      <SectionCard eyebrow="Onboard inquiry" title="Tell us about you">
+      <SectionCard eyebrow="Onboard inquiry" title="Tell us about you" className="overflow-hidden">
         <div className="grid gap-5">
           <Field label="Your name" htmlFor="oi-name">
             <TextInput id="oi-name" value={form.name} onChange={(v) => patch({ name: v })} />
@@ -211,6 +211,17 @@ export default function InquiryForm() {
             {status === "sending" ? "Sending…" : "Submit inquiry"}
           </button>
         </div>
+
+        {/* Brand scene wash: decorative, multiply at ~50%, bottom-pinned. It is in
+            the normal flow so the card keeps its height and nothing sits under it. */}
+        <img
+          src={`${import.meta.env.BASE_URL}design-assets/bg-scenes-wide/scene-wide-council-documents-05.webp`}
+          alt=""
+          aria-hidden
+          width={1639}
+          height={645}
+          className="pointer-events-none -mb-5 -mr-5 ml-auto mt-6 w-full select-none opacity-50 mix-blend-multiply sm:-mb-6 sm:-mr-6 sm:w-3/4"
+        />
       </SectionCard>
     </form>
   );

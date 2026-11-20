@@ -3,61 +3,63 @@
 @tailwind utilities;
 
 /*
-  CivicChain brand tokens — OKLCH palette.
-  Families: Blue (civic ink / primary, hue 280), Gold (money/approvals, 70),
-  Green/Sage (verified, 150), Rose (danger, 20), Orange (warning, 50),
-  Cream (warm neutral bg, 84), Slate (muted purple text, 319).
+  CivicChain brand tokens — the real ramps from the brand system
+  (civicchain-v2.vercel.app/brand → Color). Six families: Blue (civic ink /
+  primary), Gold, Green/Sage (verified), Cream (warm neutral), Slate (muted
+  purple text), Red (danger). Warm civic confidence: quiet authority, warm
+  surfaces. The names below the ramps are what the Tailwind config reads.
 */
 :root {
-  /* Blue — primary civic ink */
-  --blue-50: oklch(0.96 0.01 280);
-  --blue-100: oklch(0.93 0.02 280);
-  --blue-200: oklch(0.88 0.04 280);
-  --blue-300: oklch(0.8 0.06 280);
-  --blue-600: oklch(0.42 0.11 280);
-  --blue-700: oklch(0.34 0.11 280);
-  --blue-800: oklch(0.27 0.11 280);
-  --blue-900: oklch(0.2 0.12 280);
+  /* ── Color ramps ── */
+  --blue-100: #e2e9f7;
+  --blue-200: #d6e0f4;
+  --blue-300: #b4c0e0;
+  --blue-500: #90a2d0;
+  --blue-700: #1c2f74;
+  --blue-900: #131f86;
+  --gold-100: #efdfc3;
+  --gold-200: #eddab9;
+  --gold-300: #e9d3ab;
+  --gold-500: #b9a175;
+  --gold-600: #8a775a;
+  --gold-800: #352613;
+  --green-100: #d6f0db;
+  --green-300: #aed7b6;
+  --green-600: #498458;
+  --green-900: #0b401f;
+  --cream-50: #faf3e8;
+  --cream-100: #f3f1e8;
+  --cream-200: #efe9df;
+  --cream-300: #e4ddd2;
+  --slate-300: #c8bccb;
+  --slate-400: #9f91a3;
+  --slate-500: #6d5a72;
+  --slate-700: #48354d;
+  --red-100: #f8e1e5;
+  --red-600: #882335;
 
-  /* Gold — money / approvals */
-  --gold-50: oklch(0.97 0.02 70);
-  --gold-300: oklch(0.9 0.03 70);
-  --gold-600: oklch(0.7 0.11 70);
-  --gold-900: oklch(0.2 0.08 70);
+  /* ── Names used by tailwind.config.js (mapped onto the ramps) ── */
+  --blue-50: var(--blue-100);
+  --blue-600: var(--blue-700);
+  --blue-800: var(--blue-900); /* primary button / active nav */
+  --gold-50: var(--gold-100);
+  --gold-900: var(--gold-800);
+  --rose-300: var(--red-100);
+  --rose-700: var(--red-600);
+  --rose-900: var(--red-600);
+  --orange-300: var(--gold-300);
+  --orange-900: var(--gold-800);
 
-  /* Green / Sage — verified / healthy */
-  --green-300: oklch(0.9 0.02 150);
-  --green-600: oklch(0.6 0.09 150);
-  --green-900: oklch(0.27 0.02 150);
-
-  /* Rose — danger / risk */
-  --rose-300: oklch(0.92 0.02 20);
-  --rose-700: oklch(0.4 0.08 20);
-  --rose-900: oklch(0.28 0.08 20);
-
-  /* Orange — warning / caution */
-  --orange-300: oklch(0.89 0.05 50);
-  --orange-900: oklch(0.35 0.1 50);
-
-  /* Cream — warm neutral backgrounds */
-  --cream-50: oklch(0.99 0.01 84);
-  --cream-100: oklch(0.98 0.01 84);
-  --cream-200: oklch(0.96 0.01 84);
-
-  /* Slate — muted purple text / support */
-  --slate-400: oklch(0.65 0.03 319);
-  --slate-700: oklch(0.5 0.03 319);
-
-  /* Semantic roles */
-  --page-bg: var(--cream-200);
+  /* ── Semantic roles ── */
+  --page-bg: var(--cream-100);
   --foreground: var(--blue-900);
-  --muted-foreground: var(--slate-700);
-  --border: oklch(0.88 0.02 280);
-  --ring: oklch(0.7 0.11 70);
+  --muted-foreground: var(--slate-500);
+  --border: rgba(19, 31, 134, 0.14);
+  --ring: rgba(19, 31, 134, 0.24);
 
   --surface-base: var(--cream-50);
-  --surface-subtle: oklch(0.97 0.01 280);
-  --surface-muted: var(--cream-100);
+  --surface-subtle: var(--cream-200);
+  --surface-muted: var(--cream-200);
   --surface-raised: var(--cream-50);
   --control-bg: var(--cream-50);
 }
@@ -129,8 +131,8 @@
            px-5 py-2.5 type-body-bold transition-all disabled:opacity-50
            disabled:cursor-not-allowed;
   }
-  .btn-primary { @apply btn bg-blue-800 text-cream-50 hover:bg-blue-900; }
-  .btn-gold { @apply btn bg-gold-600 text-gold-900 hover:brightness-105; }
+  .btn-primary { @apply btn bg-blue-800 text-cream-50 hover:bg-blue-700; }
+  .btn-gold { @apply btn bg-gold-300 text-gold-900 hover:brightness-95; }
   .btn-ghost { @apply btn border bg-transparent text-foreground hover:bg-surface-muted; }
 
   /* ── Status pills ── */
