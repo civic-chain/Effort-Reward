@@ -108,17 +108,23 @@ export function TextInput({
   onChange,
   placeholder,
   type = "text",
+  autoComplete,
+  invalid,
 }: {
   id?: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  autoComplete?: string;
+  invalid?: boolean;
 }) {
   return (
     <input
       id={id}
       type={type}
+      autoComplete={autoComplete}
+      aria-invalid={invalid || undefined}
       className="control"
       value={value}
       placeholder={placeholder}
@@ -133,16 +139,22 @@ export function Select<T extends string>({
   onChange,
   options,
   small,
+  autoComplete,
+  invalid,
 }: {
   id?: string;
   value: T;
   onChange: (v: T) => void;
   options: { value: T; label: string }[];
   small?: boolean;
+  autoComplete?: string;
+  invalid?: boolean;
 }) {
   return (
     <select
       id={id}
+      autoComplete={autoComplete}
+      aria-invalid={invalid || undefined}
       className={small ? "control-sm" : "control"}
       value={value}
       onChange={(e) => onChange(e.target.value as T)}

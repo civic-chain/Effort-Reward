@@ -14,6 +14,18 @@ import { recordInquiry, type StoreMode } from "../lib/store";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+// Order the fields appear in, and the element to focus when one is wrong.
+const FIELD_ORDER: (keyof InquiryInput)[] = ["name", "email", "country", "state", "attendedCouncil", "source"];
+const FIELD_IDS: Record<keyof InquiryInput, string> = {
+  name: "oi-name",
+  email: "oi-email",
+  organization: "oi-org",
+  country: "oi-country",
+  state: "oi-state",
+  attendedCouncil: "oi-council-yes",
+  source: "oi-source-linkedin",
+};
+
 function RadioGroup<T extends string>({
   name,
   value,
@@ -21,7 +33,7 @@ function RadioGroup<T extends string>({
   options,
   invalid,
 }: {
-  name: string;
+  name: string; // option inputs get id "oi-<name>-<value>"
   value: T | "";
   onChange: (v: T) => void;
   options: readonly { value: T; label: string }[];
@@ -43,6 +55,7 @@ function RadioGroup<T extends string>({
           }`}
         >
           <input
+            id={`oi-${name}-${o.value}`}
             type="radio"
             name={name}
             value={o.value}
@@ -85,7 +98,11 @@ export default function InquiryForm() {
     if (status === "sending") return; // one tally per click-through, even on double-click
     const found = validateInquiry(form);
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    const firstBad = FIELD_ORDER.find((k) => found[k]);
+    if (firstBad) {
+      document.getElementById(FIELD_IDS[firstBad])?.focus();
+      return;
+    }
 
     setStatus("sending");
     setSendError("");
@@ -100,11 +117,27 @@ export default function InquiryForm() {
 
   if (status === "sent") {
     return (
-      <SectionCard eyebrow="Received" title="Thank you — we'll be in touch.">
-        <p className="type-body text-muted">
-          Your inquiry has been recorded. Someone from Civic-Chain will reach out at{" "}
-          <span className="font-bold text-foreground">{form.email.trim()}</span>.
-        </p>
+      <SectionCard eyebrow="Received" title={`Thank you, ${form.name.trim().split(/\s+/)[0]}.`}>
+        <div role="status" aria-live="polite">
+          <p className="type-body text-muted">
+            Your inquiry is in. We'll reach out at{" "}
+            <span className="font-bold text-foreground">{form.email.trim()}</span> to talk about what
+            Civic-Chain could do for {form.organization.trim() || "your town"}.
+          </p>
+        </div>
+        <p className="mt-5 type-caption text-gold-600">While you wait</p>
+        <ul className="mt-2 grid gap-1.5 type-body-sm">
+          <li>
+            <a className="font-bold underline underline-offset-2" href="https://civicchain-v2.vercel.app/how-it-works">
+              See how Civic-Chain works
+            </a>
+          </li>
+          <li>
+            <a className="font-bold underline underline-offset-2" href="https://civicchain-v2.vercel.app/about">
+              Meet the team
+            </a>
+          </li>
+        </ul>
         {mode === "local" && (
           <p className="mt-3 type-body-xs text-muted">
             Demo mode: Firebase isn't configured, so this was counted in this browser only.
@@ -130,14 +163,22 @@ export default function InquiryForm() {
       <SectionCard eyebrow="Onboard inquiry" title="Tell us about you" className="overflow-hidden">
         <div className="grid gap-5">
           <Field label="Your name" htmlFor="oi-name">
-            <TextInput id="oi-name" value={form.name} onChange={(v) => patch({ name: v })} />
+            <TextInput
+              id="oi-name"
+              autoComplete="name"
+              invalid={Boolean(errors.name)}
+              value={form.name}
+              onChange={(v) => patch({ name: v })}
+            />
             <ErrorText>{errors.name}</ErrorText>
           </Field>
 
-          <Field label="Email" htmlFor="oi-email">
+          <Field label="Email" htmlFor="oi-email" hint="So we can reply. We won't share it.">
             <TextInput
               id="oi-email"
               type="email"
+              autoComplete="email"
+              invalid={Boolean(errors.email)}
               value={form.email}
               onChange={(v) => patch({ email: v })}
               placeholder="you@town.gov"
@@ -146,12 +187,19 @@ export default function InquiryForm() {
           </Field>
 
           <Field label="Town, organization or agency (optional)" htmlFor="oi-org">
-            <TextInput id="oi-org" value={form.organization} onChange={(v) => patch({ organization: v })} />
+            <TextInput
+              id="oi-org"
+              autoComplete="organization"
+              value={form.organization}
+              onChange={(v) => patch({ organization: v })}
+            />
           </Field>
 
           <Field label="Country" htmlFor="oi-country">
             <Select
               id="oi-country"
+              autoComplete="country-name"
+              invalid={Boolean(errors.country)}
               value={form.country}
               onChange={(v) => patch({ country: v, state: "" })}
               options={COUNTRIES.map((c) => ({ value: c, label: c }))}
@@ -160,9 +208,11 @@ export default function InquiryForm() {
           </Field>
 
           {isUS && (
-            <Field label="State" htmlFor="oi-state">
+            <Field label="State" htmlFor="oi-state" hint="Helps us see where towns are asking about Civic-Chain.">
               <Select
                 id="oi-state"
+                autoComplete="address-level1"
+                invalid={Boolean(errors.state)}
                 value={form.state}
                 onChange={(v) => patch({ state: v })}
                 options={[
@@ -174,7 +224,10 @@ export default function InquiryForm() {
             </Field>
           )}
 
-          <Field label="Have you attended a town council meeting before?">
+          <Field
+            label="Have you attended a town council meeting before?"
+            hint="No wrong answer. It tells us how many people we are reaching who are new to local government."
+          >
             <RadioGroup
               name="council"
               value={form.attendedCouncil}
@@ -188,7 +241,7 @@ export default function InquiryForm() {
             <ErrorText>{errors.attendedCouncil}</ErrorText>
           </Field>
 
-          <Field label="How did you learn about CC?">
+          <Field label="How did you learn about CC?" hint="Pick the closest one.">
             <RadioGroup
               name="source"
               value={form.source}
@@ -218,6 +271,8 @@ export default function InquiryForm() {
           src={`${import.meta.env.BASE_URL}design-assets/bg-scenes-wide/scene-wide-council-documents-05.webp`}
           alt=""
           aria-hidden
+          loading="lazy"
+          decoding="async"
           width={1639}
           height={645}
           className="pointer-events-none -mb-5 -mr-5 ml-auto mt-6 w-full select-none opacity-50 mix-blend-multiply sm:-mb-6 sm:-mr-6 sm:w-3/4"

@@ -61,6 +61,10 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
+    document.title = route === "stats" ? "Inquiry statistics | Civic-Chain" : "Onboard Inquiry | Civic-Chain";
+  }, [route]);
+
+  useEffect(() => {
     const onHash = () => setRoute(routeFromHash());
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -98,9 +102,23 @@ export default function App() {
           <>
             <p className="type-caption text-gold-600">Onboard inquiry</p>
             <h1 className="type-h2 mt-2 max-w-3xl">Let's get your town started.</h1>
-            <p className="type-body-lg mt-4 mb-8 max-w-2xl text-muted">
-              Tell us a little about yourself and how you found Civic-Chain. It takes about a minute.
+            <p className="type-body-lg mt-4 max-w-2xl text-muted">
+              Civic-Chain gives towns a public record of their money that no one can quietly change. If you'd
+              like to see what that could mean where you live, start here.
             </p>
+            <ol className="mt-6 mb-8 grid max-w-2xl gap-2 type-body-sm sm:grid-cols-3">
+              {[
+                ["1", "Tell us about you", "A few quick questions, about a minute."],
+                ["2", "We email you", "To set up a conversation."],
+                ["3", "We talk it through", "What Civic-Chain could do for your town."],
+              ].map(([n, title, body]) => (
+                <li key={n} className="card p-4">
+                  <span className="type-caption text-gold-600">Step {n}</span>
+                  <p className="type-card-title mt-1">{title}</p>
+                  <p className="mt-0.5 text-muted">{body}</p>
+                </li>
+              ))}
+            </ol>
             <InquiryForm />
           </>
         ) : (

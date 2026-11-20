@@ -62,6 +62,25 @@ export default function StatsView() {
   ];
   const usTotal = stats.states.reduce((sum, r) => sum + r.count, 0);
 
+  if (stats.total === 0) {
+    return (
+      <div className="card-raised p-6">
+        <p className="type-card-title">No inquiries yet.</p>
+        <p className="mt-1 type-body-sm text-muted">
+          The numbers appear here as soon as the first person clicks submit.
+        </p>
+        <a href="#/" className="btn-primary mt-4">
+          Open the inquiry form
+        </a>
+        {mode === "local" && (
+          <p className="mt-3 type-body-xs text-muted">
+            Demo mode: Firebase isn't configured, so only submissions made in this browser are counted.
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6">
       <div className="card-raised p-6">
