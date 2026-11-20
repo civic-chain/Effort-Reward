@@ -1,0 +1,51 @@
+rules_version = '2';
+
+// Onboard inquiry — Firestore rules.
+//
+// Visitors may CREATE one well-formed inquiry and bump the shared counters;
+// nobody can read, edit or delete inquiries from the browser (view them in the
+// Firebase console). The aggregate counters in stats/tallies are readable so the
+// statistics page can show them — they hold no personal data.
+//
+// Paste into Firebase console → Firestore → Rules, or deploy with
+// `firebase deploy --only firestore:rules`. Also enable App Check enforcement.
+//
+// Limits of these rules: they require every write to the counters to raise
+// `submissions` by exactly 1, which blocks casual tampering, but they do not
+// verify each individual counter. For stronger guarantees, move the counting
+// into a Cloud Function.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /inquiries/{id} {
+      allow read, update, delete: if false;
+
+      allow create: if
+        request.resource.data.keys().hasOnly(
+          ['createdAt', 'name', 'email', 'organization', 'country', 'state', 'attendedCouncil', 'source'])
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 200
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 3 && request.resource.data.email.size() < 200
+        && request.resource.data.organization is string && request.resource.data.organization.size() < 200
+        && request.resource.data.country is string && request.resource.data.country.size() < 80
+        && request.resource.data.state is string && request.resource.data.state.size() < 3
+        && request.resource.data.attendedCouncil in ['yes', 'no']
+        && request.resource.data.source in ['linkedin', 'youtube', 'podcast', 'word_of_mouth', 'facebook'];
+    }
+
+    match /stats/tallies {
+      allow get: if true;
+      allow list, delete: if false;
+
+      allow create: if request.resource.data.submissions == 1;
+      allow update: if request.resource.data.submissions == resource.data.submissions + 1;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
